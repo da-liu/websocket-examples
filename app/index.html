@@ -7,9 +7,18 @@
 <body>
 <script>
 
+// Check that javascript code runs
 console.log('Client code running')
 
+// Create a new browser provided WebSocket, no libraries used
 var socket = new WebSocket('ws://localhost:4002');
+
+// WebSocket lifecycle:
+// 1. socket attempts to connect to ws://... url
+// 2. if connection succeed, 'onopen' event triggered
+// 3. websocket connection established, client can send message to server, server can send message to client
+// 4. receiving message triggers 'onmessage' event
+// 5. disconnecting, closing the tab, or server shutdown, cause websocket connection to close, 'onclose' is triggered
 
 socket.onopen = function() {
   console.log('-------open-------')
@@ -25,7 +34,6 @@ socket.onmessage = function(msg) {
 socket.onclose = function() {
   console.log('-------close-------')
 }
-
 
 </script>
 </body>
