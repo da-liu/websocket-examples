@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Websocket Pure</title>
+</head>
+<body>
+<script>
+
+console.log('Client code running')
+
+var socket = new WebSocket('ws://localhost:4002');
+
+socket.onopen = function() {
+  console.log('-------open-------')
+  // Once socket connection is open, send a message to server
+  socket.send('Message from client')
+}
+
+socket.onmessage = function(msg) {
+  console.log('-------message-------')
+  console.log(msg)
+}
+
+socket.onclose = function() {
+  console.log('-------close-------')
+}
+
+
+</script>
+</body>
+</html>
