@@ -11,21 +11,28 @@ app.get('/', function(req, res) {
   res.send('hello from express server')
 })
 
-io.on('connection', function(socket) {
+var chat = io.of('/chat')
+var news = io.of('/news')
 
-  console.log('-------new client connected------')
+chat.on('connection', function(socket) {
 
-  socket.emit('msg', 'msg from express server via websocket')
+  console.log('-------new chat client------')
 
-  // socket.io allows you to emit and receive custom events
-  // custom events are simply strings:
-  // e.g. 'message', 'msg', 'data', 'private msg', 'notification'
-  socket.on('data', function(data) {
-    console.log(data)
+  // both socket and chat are available
+  // socket is for namespaced msgs, i.e. only under '/chat'
+  // chat will send msgs to everyone
+  socket.on('message', function(msg) {
+    console.log('chat socket:', msg)
   })
 
-  socket.on('msg', function(msg) {
-    console.log(msg)
+})
+
+news.on('connection', function(socket) {
+
+  console.log('--------new news client---------')
+
+  socket.on('message', function(msg) {
+    console.log('news socket:', msg)
   })
 
 })
