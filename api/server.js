@@ -1,28 +1,27 @@
-// WebSocket is the name of a protocol for client-server communication
-// E.g. http is a protocol, http://localhost:3000; for WebSocket, ws://localhost:3000
-// 'ws' is one of many libraries that implement an API for the WebSocket protocol
-// Other libraries include: 'socket.io', 'websocket-node', 'primus', etc
+// socket.io is another popular WebSocket libraries
+// io is the library's default name for WebSockets
 
-var WebSocket = require('ws')
+// First create a plain node server
+var app = require('http').createServer(function(req, res) {
+  res.end('hello from server')
+})
 
-// webSockets extends the EventEmitter class
-// Attaching listeners to this is essentially how server handles WebSocket connections from multiple clients
-var webSockets = new WebSocket.Server({ port: 4002 })
+// Wrap server app in socket io
+// This makes WebSocket available on the same port as http server
+var io = require('socket.io')(app)
 
-// If a client connects to the server via WebSocket
-// Callback receive a single client connection
-webSockets.on('connection', function(oneSocket) {
+io.on('connection', function(socket) {
 
-  // If the client sends a message, the 'message' event is triggered
-  oneSocket.on('message', function(clientMessage) {
+  console.log('-----new connection-----')
 
-    console.log(clientMessage)
-    // Here we echo back to the client whatever message was received
-    // Note this only sends to a single client
-    oneSocket.send(`Server echo: ${clientMessage}`)
+  socket.emit('msg', 'msg from server')
 
+  socket.on('msg', function(msg) {
+    console.log(msg)
   })
 
 })
 
+
+app.listen(4002)
 console.log('WS listening on port 4002 ...')

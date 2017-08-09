@@ -2,38 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Websocket Pure</title>
+  <title>Websocket Socket.io</title>
 </head>
 <body>
+<!--
+
+unlike the ws library, socket.io requires a client script
+the script provides a global variable 'io' to create socket connections
+
+A single browser client can open multiple sockets to the server
+
+-->
+<script src="//localhost:4002/socket.io/socket.io.js"></script>
 <script>
 
 // Check that javascript code runs
 console.log('Client code running')
 
-// Create a new browser provided WebSocket, no libraries used
-var socket = new WebSocket('ws://localhost:4002');
+// Connect to server
+var socket = io('ws://localhost:4002')
 
-// WebSocket lifecycle:
-// 1. socket attempts to connect to ws://... url
-// 2. if connection succeed, 'onopen' event triggered
-// 3. websocket connection established, client can send message to server, server can send message to client
-// 4. receiving message triggers 'onmessage' event
-// 5. disconnecting, closing the tab, or server shutdown, cause websocket connection to close, 'onclose' is triggered
+// Log if connection is successful
+socket.on('connect', function() {
+  console.log('----connected to server-----')
+  socket.emit('msg', { clientMsgKey: 'clientMsgVal' })
+})
 
-socket.onopen = function() {
-  console.log('-------open-------')
-  // Once socket connection is open, send a message to server
-  socket.send('Message from client')
-}
-
-socket.onmessage = function(msg) {
-  console.log('-------message-------')
+// Log message from server
+socket.on('msg', function(msg) {
   console.log(msg)
-}
-
-socket.onclose = function() {
-  console.log('-------close-------')
-}
+})
 
 </script>
 </body>
