@@ -1,27 +1,31 @@
-// socket.io is another popular WebSocket libraries
-// io is the library's default name for WebSockets
+// Instead of a plain node.js server, we can also use express
 
-// First create a plain node server
-var app = require('http').createServer(function(req, res) {
-  res.end('hello from server')
+var app = require('express')()
+var server = require('http').Server(app)
+var io = require('socket.io')(server)
+
+server.listen(4002)
+console.log('Listening on port 4002 ...')
+
+app.get('/', function(req, res) {
+  res.send('hello from express server')
 })
-
-// Wrap server app in socket io
-// This makes WebSocket available on the same port as http server
-var io = require('socket.io')(app)
 
 io.on('connection', function(socket) {
 
-  console.log('-----new connection-----')
+  console.log('-------new client connected------')
 
-  socket.emit('msg', 'msg from server')
+  socket.emit('msg', 'msg from express server via websocket')
+
+  // socket.io allows you to emit and receive custom events
+  // custom events are simply strings:
+  // e.g. 'message', 'msg', 'data', 'private msg', 'notification'
+  socket.on('data', function(data) {
+    console.log(data)
+  })
 
   socket.on('msg', function(msg) {
     console.log(msg)
   })
 
 })
-
-
-app.listen(4002)
-console.log('WS listening on port 4002 ...')
