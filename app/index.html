@@ -13,36 +13,41 @@ the script provides a global variable 'io' to create socket connections
 A single browser client can open multiple sockets to the server
 
 -->
-<script src="//localhost:4002/socket.io/socket.io.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+<!-- <script src="//localhost:4002/socket.io/socket.io.js"></script> -->
 <script>
 
 // Check that javascript code runs
 console.log('Client code running')
 
 // Connect to server
-var chat = io('ws://localhost:4002/chat')
-var news = io('ws://localhost:4002/news')
+var socket = io('ws://localhost:3001')
+
+// Replace on function with one that captures any and all messages from server
+var onevent = socket.onevent
+
+socket.onevent = function(packet) {
+  var args = packet.data || []
+  onevent.call(this, packet)
+  packet.data = ["*"].concat(args)
+  onevent.call(this, packet)
+}
 
 // Log if connection is successful
-chat.on('connect', function() {
+socket.on('connect', function() {
   console.log('----connected to server chat-----')
 
-  chat.emit('message', 'c1 chat')
+  socket.emit('msg', 'c1 chat')
 
-  chat.on('message', function(msg) {
-    console.log('server chat:', msg)
+  socket.on('*', function(event, data) {
+    console.log('=== Any Message ===')
+    console.log('event:', event)
+    console.log('data:', data)
   })
+
 })
 
-news.on('connect', function() {
-  console.log('----connected to server news-----')
-
-  news.emit('message', 'c1 news')
-
-  chat.on('message', function(msg) {
-    console.log('server news:', msg)
-  })
-})
 
 </script>
 </body>
